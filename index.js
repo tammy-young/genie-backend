@@ -1,4 +1,5 @@
-import express from "express";
+import express, { Router } from "express";
+import serverless from "serverless-http";
 import cors from 'cors';
 import 'dotenv/config';
 
@@ -6,17 +7,16 @@ import search from "./api/search.js";
 import getBrands from "./api/getBrands.js";
 import getSeller from "./api/getSeller.js";
 
+const api = express();
+api.use(cors());
 
-const PORT = process.env.PORT || 3001;
+const router = Router();
 
-const app = express();
-app.use(cors())
+// app.listen(PORT, () => {
+//     console.log(`Server listening on ${PORT}`);
+// });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-});
-
-app.get("/getSeller", (req, res) => {
+router.get("/getSeller", (req, res) => {
     let sellerId = req.query.sellerId;
     getSeller(sellerId)
     .then((username) => {
@@ -27,7 +27,7 @@ app.get("/getSeller", (req, res) => {
     });
 });
 
-app.get("/getBrands", (req, res) => {
+router.get("/getBrands", (req, res) => {
     getBrands()
     .then(data => {
         res.json(data);
@@ -37,13 +37,17 @@ app.get("/getBrands", (req, res) => {
     });
 });
 
-app.get("/search", async (req, res) => {
+router.get("/search", async (req, res) => {
     search(req)
     .then(data => {
         res.json(data);
     });
 });
 
-app.get("/test", (req, res) => {
+router.get("/test", (req, res) => {
     res.send("Hello, world!");
 });
+
+api.use("/api/", router);
+
+export const handler = serverless(api);
