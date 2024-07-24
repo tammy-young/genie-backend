@@ -16,6 +16,10 @@ const router = Router();
 //     console.log(`Server listening on ${PORT}`);
 // });
 
+router.get("/", (req, res) => {
+    res.json({"hello": "world"});
+});
+
 router.get("/getSeller", (req, res) => {
     let sellerId = req.query.sellerId;
     getSeller(sellerId)
